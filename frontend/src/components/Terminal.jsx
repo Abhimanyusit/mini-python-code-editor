@@ -31,6 +31,7 @@ function TerminalWindow({ output, onClear }) {
   }, []);
 
   useEffect(() => {
+    console.log("Terminal output update:", output);
     if (termRef.current) {
       const safeOutput = output ? output : "";
       if (lastOutputRef.current !== safeOutput) {
@@ -102,17 +103,32 @@ function TerminalWindow({ output, onClear }) {
         </div>
         <button
           onClick={onClear}
+          title="Clear"
           style={{
-            background: "#27272a",
+            background: "linear-gradient(90deg, #22c55e 60%, #16a34a 100%)",
             color: "#fff",
-            border: "1px solid #444",
-            borderRadius: "4px",
-            padding: "2px 10px",
-            fontSize: "13px",
+            border: "none",
+            borderRadius: "6px",
+            padding: "6px 16px",
+            fontWeight: "bold",
+            fontSize: "14px",
             cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            boxShadow: "0 1px 4px rgba(34,197,94,0.12)",
+            transition: "background 0.2s",
           }}
         >
-          Clear
+          <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+            <path
+              d="M6 6v5M10 6v5M2.5 4h11M5.5 4V3.5A1.5 1.5 0 0 1 7 2h2A1.5 1.5 0 0 1 10.5 3.5V4m-6 0v8A1.5 1.5 0 0 0 6 13.5h4A1.5 1.5 0 0 0 12.5 12V4"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
       </div>
       <div
@@ -122,6 +138,7 @@ function TerminalWindow({ output, onClear }) {
           background: "#18181b",
           color: "white",
           fontFamily: "Fira Mono, monospace",
+          textAlign: "left",
         }}
       />
     </div>

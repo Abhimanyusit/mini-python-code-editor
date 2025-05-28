@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { EditorView, keymap } from "@codemirror/view";
+import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { python } from "@codemirror/lang-python";
 
-// Custom theme for green cursor (solid and blinking)
 const greenCursorTheme = EditorView.theme({
   ".cm-cursor": {
     borderLeft: "2px solid #22c55e !important",
@@ -14,14 +13,23 @@ const greenCursorTheme = EditorView.theme({
   },
   ".cm-content": {
     caretColor: "#22c55e !important",
+    textAlign: "left",
   },
   "&.cm-focused .cm-cursor": {
     borderLeft: "2px solid #22c55e !important",
     backgroundColor: "#22c55e !important",
   },
+  ".cm-gutters": {
+    backgroundColor: "#5D576B !important",
+    color: "#white !important",
+    border: "!important",
+  },
+  ".cm-lineNumbers .cm-gutterElement": {
+    color: "white !important",
+  },
 });
 
-function CodeEditor({ code, setCode, onRun }) {
+function CodeEditor({ code, setCode, onRun, fileName, setFileName, onSave }) {
   const editorRef = useRef();
   const viewRef = useRef();
 
@@ -32,6 +40,7 @@ function CodeEditor({ code, setCode, onRun }) {
       state: EditorState.create({
         doc: code,
         extensions: [
+          lineNumbers(),
           history(),
           keymap.of([...defaultKeymap, ...historyKeymap]),
           python(),
@@ -46,11 +55,9 @@ function CodeEditor({ code, setCode, onRun }) {
       parent: editorRef.current,
     });
 
-    // Auto-focus the editor on mount
     viewRef.current.focus();
 
     return () => viewRef.current.destroy();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -65,6 +72,9 @@ function CodeEditor({ code, setCode, onRun }) {
       });
     }
   }, [code]);
+
+  // Clear handler
+  const handleClear = () => setCode("");
 
   return (
     <div
@@ -123,31 +133,74 @@ function CodeEditor({ code, setCode, onRun }) {
               marginRight: "12px",
             }}
           />
-          Editor
+          <input
+            type="text"
+            value={fileName}
+            onChange={(e) => setFileName(e.target.value)}
+            placeholder="Untitled.py"
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#facc15",
+              fontWeight: "bold",
+              fontSize: "14px",
+              outline: "none",
+              width: "120px",
+            }}
+          />
         </div>
-        <button
-          onClick={onRun}
-          style={{
-            background: "linear-gradient(90deg, #22c55e 60%, #16a34a 100%)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            padding: "6px 16px",
-            fontWeight: "bold",
-            fontSize: "14px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            boxShadow: "0 1px 4px rgba(34,197,94,0.12)",
-            transition: "background 0.2s",
-          }}
-        >
-          <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-            <polygon points="4,3 13,8 4,13" fill="white" />
-          </svg>
-          Run
-        </button>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button onClick={handleClear} title="Clear" style={iconBtnStyle}>
+            {/* Clear SVG (trash) */}
+            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+              <rect
+                x="3"
+                y="6"
+                width="10"
+                height="7"
+                rx="1"
+                stroke="#fff"
+                strokeWidth="2"
+              />
+              <path d="M6 7v4M10 7v4" stroke="#fff" strokeWidth="2" />
+              <path d="M2 4h12M6 2h4" stroke="#fff" strokeWidth="2" />
+            </svg>
+          </button>
+          <button onClick={onSave} title="Save" style={iconBtnStyle}>
+            {/* Save SVG (floppy) */}
+            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+              <rect
+                x="3"
+                y="2"
+                width="10"
+                height="12"
+                rx="1"
+                stroke="#fff"
+                strokeWidth="2"
+              />
+              <path d="M6 2v4h4V2" stroke="#fff" strokeWidth="2" />
+              <rect x="6" y="10" width="4" height="2" rx="1" fill="#fff" />
+            </svg>
+          </button>
+          <button
+            onClick={onRun}
+            title="Run"
+            style={{
+              ...iconBtnStyle,
+              background: "linear-gradient(90deg, #22c55e 60%, #16a34a 100%)",
+              color: "#fff",
+              padding: "6px 16px",
+              fontWeight: "bold",
+              fontSize: "14px",
+              gap: "6px",
+            }}
+          >
+            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+              <polygon points="4,3 13,8 4,13" fill="white" />
+            </svg>
+            Run
+          </button>
+        </div>
       </div>
       <div
         ref={editorRef}
@@ -156,10 +209,25 @@ function CodeEditor({ code, setCode, onRun }) {
           background: "#18181b",
           color: "#e5e5e5",
           fontFamily: "Fira Mono, monospace",
+          overflowY: "auto", // <-- add this line
         }}
       />
     </div>
   );
 }
+
+// Add this style object above your component
+const iconBtnStyle = {
+  background: "linear-gradient(90deg, #22c55e 60%, #16a34a 100%)",
+  border: "none",
+  borderRadius: "4px",
+  padding: "6px",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  transition: "background 0.2s",
+  color: "#fff",
+};
 
 export default CodeEditor;
