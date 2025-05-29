@@ -2,6 +2,9 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY backend/runner.py .
+COPY backend/requirements.txt .
+RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python", "runner.py"]
+COPY backend/ .
+
+CMD ["python", "app.py"]
