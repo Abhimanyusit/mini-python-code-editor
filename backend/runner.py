@@ -1,10 +1,13 @@
 import sys
 import io
 
-with open("code.py") as f:
+code_file = sys.argv[1]
+input_file = sys.argv[2]
+
+with open(code_file) as f:
     code = f.read()
 
-with open("input.txt") as f:
+with open(input_file) as f:
     inputs = f.read().splitlines()
 
 # Setup fake input and output capture

@@ -25,11 +25,8 @@ def execute_code():
 
     try:
         result = subprocess.run([
-            "docker", "run", "--rm",
-            "-v", f"{os.path.abspath(code_file)}:/app/code.py",
-            "-v", f"{os.path.abspath(input_file)}:/app/input.txt",
-            "python-runner-image"
-        ], capture_output=True, text=True, timeout=5, input=user_input)
+            "python", "runner.py", code_file, input_file
+        ], capture_output=True, text=True, timeout=5)
 
         output = result.stdout + result.stderr
     except subprocess.TimeoutExpired:
