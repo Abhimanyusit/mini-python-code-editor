@@ -34,14 +34,11 @@ function App() {
     setQuote(random);
 
     try {
-      const response = await fetch(
-        "https://mini-python-code-editor.fly.dev/execute",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, input }),
-        }
-      );
+      const response = await fetch("http://localhost:8080/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, input }),
+      });
 
       const data = await response.json();
       setOutput(data.output ?? "No output");
